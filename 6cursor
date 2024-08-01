@@ -1,0 +1,55 @@
+create table ep1(
+eid number(5),
+ename varchar(20),
+age number(5),
+salary number(10));
+
+desc ep1;
+
+insert into ep1 values(100,'ram',24,7843);
+insert into ep1 values(102,'shyam',78,234);
+insert into ep1 values(103,'kate',32,8902);
+insert into ep1 values(104,'berry',17,9901);
+
+select * from ep1;
+
+create table ep2(
+eid number(5),
+ename varchar(20),
+age number(5),
+salary number(10));
+
+desc ep2;
+
+insert into ep2 values(104,'berry',17,9901);
+insert into ep2 values(108,'loy',89,2431);
+insert into ep2 values(110,'qeury',34,820);
+insert into ep2 values(102,'shyam',78,234);
+select * from ep2;
+
+set serveroutput on;
+
+declare
+
+cursor c_new_rollcall is
+select * from ep1;
+
+v_exists number;
+begin
+for n_rec in c_new_rollcall loop
+select count(*) into v_exists
+from ep2
+where eid=n_rec.eid;
+if v_exists=0 then
+insert into ep2(eid,ename,age,salary) values (n_rec.eid,n_rec.ename,n_rec.age,n_rec.salary);
+else
+dbms_output.put_line('Record with eid '||n_rec.eid||' already exists.');
+end if;
+end loop;
+commit;
+dbms_output.put_line('Merge completed successfully');
+exception
+when others then
+dbms_output.put_line('Error occurred : '||sqlerrm);
+rollback;
+end;
